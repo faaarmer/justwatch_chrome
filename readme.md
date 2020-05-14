@@ -23,6 +23,7 @@ It works on the next Movie / TV shows related web pages:
 If you want another web to be added, please, open an issue (or if you are a developer, I am open to pull requests. Instructions below).
 
 Right now it gets info for this countries:
+* Australia
 * USA
 * Canada
 * España
