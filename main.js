@@ -394,7 +394,10 @@ class JustWatchChrome {
             provider +
             '">' +
             (content.id
-              ? '<a href="' + ratingSites[provider]["url"] + content.id + '">'
+              ? '<a target="_blank"  href="' +
+                ratingSites[provider]["url"] +
+                content.id +
+                '">'
               : "") +
             '<span class="jwc-platform-' +
             provider +
@@ -497,7 +500,7 @@ class JustWatchChrome {
                 offer.provider_id +
                 " " +
                 (cheapest ? "cheapest" : "") +
-                '"><a href="' +
+                '"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
@@ -536,7 +539,7 @@ class JustWatchChrome {
                 offer.provider_id +
                 " " +
                 (cheapest ? "cheapest" : "") +
-                '"><a href="' +
+                '"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
@@ -579,7 +582,7 @@ class JustWatchChrome {
                 offer.provider_id +
                 " " +
                 (cheapest ? "cheapest" : "") +
-                '"><a href="' +
+                '"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
@@ -608,7 +611,7 @@ class JustWatchChrome {
                 " " +
                 " provider-" +
                 offer.provider_id +
-                ' cheapest"><a href="' +
+                ' cheapest"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
@@ -632,7 +635,7 @@ class JustWatchChrome {
                 " " +
                 " provider-" +
                 offer.provider_id +
-                ' cheapest"><a href="' +
+                ' cheapest"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
@@ -657,7 +660,7 @@ class JustWatchChrome {
                 " " +
                 " provider-" +
                 offer.provider_id +
-                ' cheapest"><a href="' +
+                ' cheapest"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
@@ -682,7 +685,7 @@ class JustWatchChrome {
                 " " +
                 " provider-" +
                 offer.provider_id +
-                ' cheapest"><a href="' +
+                ' cheapest"><a target="_blank"  href="' +
                 url +
                 '"><span class="provider provider-' +
                 offer.provider_id +
