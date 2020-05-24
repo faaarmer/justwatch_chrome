@@ -548,9 +548,8 @@ class JustWatchChrome {
                 '</span>  <span class="presentation">' +
                 offer.presentation_type +
                 '</span>  <span class="price">' +
-                offer.retail_price +
-                " " +
                 currency[offer.currency] +
+                offer.retail_price +
                 "</span></a></li>\n"
             );
             break;
@@ -591,9 +590,8 @@ class JustWatchChrome {
                 '</span>  <span class="presentation">' +
                 offer.presentation_type +
                 '</span>  <span class="price">' +
-                offer.retail_price +
-                " " +
                 currency[offer.currency] +
+                offer.retail_price +
                 "</span></a></li>\n"
             );
             break;
