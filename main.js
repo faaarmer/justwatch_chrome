@@ -201,81 +201,97 @@ class JustWatchChrome {
   }
 
   printPanel(response, div) {
-    var offersDiv,
-      nomatches = true,
-      responseMatches = [];
+    chrome.runtime.sendMessage(
+      {
+        type: "fetchProviders",
+        data: {
+          localization: l18n,
+        },
+      },
+      function (providers) {
+        console.log("providers", providers);
 
-    div.appendChild(
-      document.createRange().createContextualFragment(this.getPanelTitleHTML())
-    );
+        var offersDiv,
+          nomatches = true,
+          responseMatches = [];
 
-    div.appendChild(this.noMatchesP);
+        div.appendChild(
+          document
+            .createRange()
+            .createContextualFragment(this.getPanelTitleHTML())
+        );
 
-    if (response.total_results > 0) {
-      //justWatchSetTotalResults( response.total_results );
+        div.appendChild(this.noMatchesP);
 
-      if (response.total_results === 1) {
-        item = response.items[0];
-        this.setPanelTitleURL(item);
+        if (response.total_results > 0) {
+          //justWatchSetTotalResults( response.total_results );
 
-        nomatches = false;
+          if (response.total_results === 1) {
+            item = response.items[0];
+            this.setPanelTitleURL(item);
 
-        div.appendChild(this.getRatingsHTML(item.scoring));
-        div.appendChild(this.getOffersHTML(item.offers));
-      } else {
-        var done = false;
-        var totalItems = response.items.length;
-        for (var i = 0; i < totalItems /*&& !done*/; i++) {
-          var item = response.items[i];
-          if (
-            (this.year != null && item.original_release_year == this.year) ||
-            (this.yearAlt != null && item.original_release_year == this.yearAlt)
-          ) {
-            if (!done) {
-              nomatches = false;
-              this.setPanelTitleURL(item);
-              div.appendChild(this.getRatingsHTML(item.scoring));
-              div.appendChild(this.getOffersHTML(item.offers));
+            nomatches = false;
 
-              // this.movieJustWatchData = this.getTitle(this.type, item.id);
-              // if(debug) console.log({data:this.movieJustWatchData});
+            div.appendChild(this.getRatingsHTML(item.scoring));
+            div.appendChild(this.getOffersHTML(item.offers, providers));
+          } else {
+            var done = false;
+            var totalItems = response.items.length;
+            for (var i = 0; i < totalItems /*&& !done*/; i++) {
+              var item = response.items[i];
+              if (
+                (this.year != null &&
+                  item.original_release_year == this.year) ||
+                (this.yearAlt != null &&
+                  item.original_release_year == this.yearAlt)
+              ) {
+                if (!done) {
+                  nomatches = false;
+                  this.setPanelTitleURL(item);
+                  div.appendChild(this.getRatingsHTML(item.scoring));
+                  div.appendChild(this.getOffersHTML(item.offers, providers));
+
+                  // this.movieJustWatchData = this.getTitle(this.type, item.id);
+                  // if(debug) console.log({data:this.movieJustWatchData});
+                }
+                done = true;
+
+                responseMatches.push(item);
+              }
             }
-            done = true;
+          }
 
-            responseMatches.push(item);
+          if (nomatches) {
+            this.noMatchesP.innerHTML =
+              "NO PERFECT MATCHES [but " + response.total_results + " results]";
+
+            if (debug)
+              this.noMatchesP.innerHTML +=
+                "<p>T:" +
+                this.titleFull +
+                " Y:" +
+                this.year +
+                " Y:" +
+                this.yearAlt +
+                "</p>";
+
+            this.showListResults(response);
+
+            div.appendChild(this.getOffersHTML(response.items[0].offers));
+          } else {
+            this.removeNoMatches();
+
+            if (debug)
+              this.setTotalResults(
+                responseMatches.length + "/" + response.total_results
+              );
+
+            if (debug) console.log(responseMatches);
+            //this.showListResults(responseMatches);
           }
         }
-      }
-
-      if (nomatches) {
-        this.noMatchesP.innerHTML =
-          "NO PERFECT MATCHES [but " + response.total_results + " results]";
-
-        if (debug)
-          this.noMatchesP.innerHTML +=
-            "<p>T:" +
-            this.titleFull +
-            " Y:" +
-            this.year +
-            " Y:" +
-            this.yearAlt +
-            "</p>";
-
-        this.showListResults(response);
-
-        div.appendChild(this.getOffersHTML(response.items[0].offers));
-      } else {
-        this.removeNoMatches();
-
-        if (debug)
-          this.setTotalResults(
-            responseMatches.length + "/" + response.total_results
-          );
-
-        if (debug) console.log(responseMatches);
-        //this.showListResults(responseMatches);
-      }
-    }
+      }.bind(this)
+    );
   }
 
   getPanelTitleHTML() {
@@ -414,7 +430,7 @@ class JustWatchChrome {
     return ratingsDiv;
   }
 
-  getOffersHTML(offers) {
+  getOffersHTML(offers, providers) {
     var offersDiv = document.createElement("div");
     offersDiv.classList.add("justwatch-offers");
 
@@ -458,7 +474,12 @@ class JustWatchChrome {
         }
 
         var logo = "";
-        var logoURL = this.providerLogoURL(offer.provider_id);
+        var providerLogoUrl = providers
+          .find((provider) => provider.id === offer.provider_id)
+          .icon_url.replace("{profile}", "s100");
+
+        var logoURL = "https://images.justwatch.com" + providerLogoUrl;
+        // var logoURL =  this.providerLogoURL(offer.provider_id);
 
         if (logoURL != false) {
           logo =
@@ -726,14 +747,14 @@ class JustWatchChrome {
     return offersDiv;
   }
 
-  providerLogoURL(provider_id) {
-    if (typeof providers[provider_id] != "undefined") {
-      return chrome.runtime.getURL(
-        "providers/" + providers[provider_id] + ".jpeg"
-      );
-    }
-    return false;
-  }
+  // providerLogoURL(provider_id) {
+  //   if (typeof providers[provider_id] != "undefined") {
+  //     return chrome.runtime.getURL(
+  //       "providers/" + providers[provider_id] + ".jpeg"
+  //     );
+  //   }
+  //   return false;
+  // }
 
   getWaitForSelector() {
     for (let hostname in supportedWeb) {
