@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("popup loaded");
 
   var dropdownL18n = document.getElementById("select-l18n");
+  var cheapestCheckbox = document.getElementById("showCheapestOfferOnly");
   //console.log(dropdownL18n);
 
   countriesLength = countries.length;
@@ -22,6 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
       "selected";
   });
 
+  browser.storage.sync.get("justwatch-showCheapestOfferOnly", function (value) {
+    if (typeof value["justwatch-showCheapestOfferOnly"] != "undefined") {
+      showCheapestOfferOnly = value["justwatch-showCheapestOfferOnly"];
+    }
+    cheapestCheckbox.checked = showCheapestOfferOnly;
+  });
+
   dropdownL18n.addEventListener("change", () => {
     console.log(dropdownL18n);
     console.log(dropdownL18n.value);
@@ -29,6 +37,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // SAVE
     chrome.storage.sync.set({ "justwatch-l18n": l18n });
+
+    window.close();
+
+    browser.tabs.reload();
+
+    //console.log('execute!');
+    //execute();
+  });
+
+  cheapestCheckbox.addEventListener("change", () => {
+    const checked = cheapestCheckbox.checked;
+
+    // SAVE
+    chrome.storage.sync.set({ "justwatch-showCheapestOfferOnly": checked });
 
     window.close();
 

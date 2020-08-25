@@ -3,6 +3,7 @@ const browser = window.browser || window.chrome;
 
 var debug = false;
 var l18n = "es_ES";
+var showCheapestOfferOnly = false;
 const API_DOMAIN = "apis.justwatch.com";
 const DOMAIN = "justwatch.com";
 
@@ -495,7 +496,7 @@ class JustWatchChrome {
         }
 
         presentationTypes[offer.presentation_type] = true;
-        var cheapest = false;
+        var cheapest = showCheapestOfferOnly ? false : true;
 
         switch (offer.monetization_type) {
           case "flatrate":
@@ -535,12 +536,13 @@ class JustWatchChrome {
 
           case "rent":
             if (
-              typeof offersData[offer.monetization_type][offer.provider_id] ==
+              showCheapestOfferOnly &&
+              (typeof offersData[offer.monetization_type][offer.provider_id] ==
                 "undefined" ||
-              offer.retail_price <
-                offersData[offer.monetization_type][offer.provider_id][
-                  "cheapest_price"
-                ]
+                offer.retail_price <
+                  offersData[offer.monetization_type][offer.provider_id][
+                    "cheapest_price"
+                  ])
             ) {
               this.setCheapestOffer(offer, offersDiv, offersData);
               cheapest = true;
@@ -577,12 +579,13 @@ class JustWatchChrome {
 
           case "buy":
             if (
-              typeof offersData[offer.monetization_type][offer.provider_id] ==
+              showCheapestOfferOnly &&
+              (typeof offersData[offer.monetization_type][offer.provider_id] ==
                 "undefined" ||
-              offer.retail_price <
-                offersData[offer.monetization_type][offer.provider_id][
-                  "cheapest_price"
-                ]
+                offer.retail_price <
+                  offersData[offer.monetization_type][offer.provider_id][
+                    "cheapest_price"
+                  ])
             ) {
               this.setCheapestOffer(offer, offersDiv, offersData);
               cheapest = true;
@@ -743,7 +746,6 @@ class JustWatchChrome {
     } else {
       offersDiv.innerHTML = '<p class="message">NO OFFERS</p>';
     }
-
     return offersDiv;
   }
 
@@ -802,6 +804,12 @@ document.body.onload = function () {
           clearInterval(checkExist);
         }
       }, 100);
+    }
+  });
+
+  browser.storage.sync.get("justwatch-showCheapestOfferOnly", function (value) {
+    if (typeof value["justwatch-showCheapestOfferOnly"] != "undefined") {
+      showCheapestOfferOnly = value["justwatch-showCheapestOfferOnly"];
     }
   });
 };
