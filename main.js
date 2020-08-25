@@ -440,7 +440,7 @@ class JustWatchChrome {
 
     if (typeof offers !== "undefined" && offers.length > 0) {
       for (const [index, offer] of offers.entries()) {
-        //if(debug) console.log(offer);
+        if (debug) console.log(offer);
 
         var domainString = "";
         var url = "#";
